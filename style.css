@@ -1,0 +1,162 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f7fafc;
+  margin: 0; padding: 0;
+}
+header {
+  background: #1976d2;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+header h1 {
+  margin: 0; font-size: 1.5rem;
+}
+#user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+button {
+  cursor: pointer;
+  border: none;
+  background: #1565c0;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  transition: background 0.3s;
+}
+button:hover {
+  background: #0d3c75;
+}
+#clock {
+  font-weight: bold;
+  margin-left: 20px;
+  font-size: 1rem;
+}
+main {
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: #f0f4ff;
+  padding: 15px;
+  border-radius: 8px;
+  align-items: center;
+  margin-bottom: 25px;
+}
+form input[type="text"],
+form input[type="number"],
+form input[type="date"],
+form select {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+form button {
+  flex-grow: 1;
+  max-width: 150px;
+  background: #1976d2;
+}
+
+/* Task list styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fffde7;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+th, td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.9rem;
+}
+th {
+  background: #e3f2fd;
+}
+tr.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
+  background-color: #d0f0d0 !important;
+}
+tr:last-child td {
+  font-weight: bold;
+  border-bottom: none;
+}
+/* Chips */
+.chip {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 15px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: capitalize;
+  min-width: 70px;
+  text-align: center;
+  user-select: none;
+}
+.priority-high {
+  background-color: #f44336;
+}
+.priority-medium {
+  background-color: #ff9800;
+}
+.priority-low {
+  background-color: #388e3c;
+}
+.status-pending {
+  background-color: #d32f2f;
+}
+.status-inprogress {
+  background-color: #1976d2;
+}
+.status-completed {
+  background-color: #388e3c;
+}
+/* Calendar view */
+#calendar {
+  margin-top: 35px;
+}
+.calendar-day {
+  background: #e3f2fd;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.calendar-day strong {
+  font-weight: bold;
+}
+.calendar-day ul {
+  list-style-type: none;
+  margin: 8px 0 0 0;
+  padding: 0;
+}
+.calendar-day ul li {
+  margin: 4px 0;
+  font-size: 0.9rem;
+}
+/* Responsive */
+@media (max-width: 700px) {
+  form {
+    flex-direction: column;
+  }
+  form button {
+    max-width: 100%;
+  }
+  table, th, td {
+    font-size: 0.8rem;
+  }
+}

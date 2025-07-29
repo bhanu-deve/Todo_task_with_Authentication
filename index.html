@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Todo List with Firebase Auth</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <h1>Todo List App</h1>
+  <div id="user-info">
+    <span id="username" style="font-weight:bold;">Not signed in</span>
+    <button id="login-btn">Sign In with Google</button>
+    <button id="logout-btn" style="display:none;">Logout</button>
+    <div id="clock"></div>
+  </div>
+</header>
+
+<main id="app" style="display:none;">
+  <form id="task-form">
+    <input type="text" id="title" placeholder="Task title" required minlength="1" />
+    <select id="priority" required>
+      <option value="high">High Priority</option>
+      <option value="medium" selected>Medium Priority</option>
+      <option value="low">Low Priority</option>
+    </select>
+    <input type="date" id="due-date" required />
+    <input type="number" id="spend" placeholder="Money Spent (₹)" min="0" value="0" />
+    <button type="submit">Add Task</button>
+  </form>
+
+  <table aria-label="Task List" id="task-table">
+    <thead>
+      <tr>
+        <th>Complete</th>
+        <th>Title</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Due Date</th>
+        <th>Money Spent (₹)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="tasks-body"></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="5" style="text-align:right;">Total Money Spent:</td>
+        <td id="total-spend">₹0.00</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <section id="calendar">
+    <h2>Calendar View</h2>
+    <div id="calendar-content"></div>
+  </section>
+</main>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+
+<!-- Your custom logic -->
+<script src="firebase-todo.js"></script>
+
+
+
+</body>
+</html>
