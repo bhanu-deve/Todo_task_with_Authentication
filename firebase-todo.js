@@ -30,7 +30,16 @@ let unsubscribeTasks = null;
 
 // Update the clock every second
 function updateClock() {
-  clockDiv.textContent = new Date().toLocaleString();
+  const now = new Date();
+  clockDiv.textContent = now.toLocaleString(undefined, { 
+    weekday: 'short', 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric', 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit' 
+  });
 }
 setInterval(updateClock, 1000);
 updateClock();
@@ -68,7 +77,8 @@ function renderTasks(tasks) {
     const completeTd = document.createElement('td');
     const checkbox = document.createElement('input');
     checkbox.type = "checkbox";
-    checkbox.checked = task.checked;
+    checkbox.checked = task.checked || false;
+    checkbox.style.transform = "scale(1.2)";
     checkbox.onchange = () => toggleComplete(task.id, checkbox.checked);
     completeTd.appendChild(checkbox);
     tr.appendChild(completeTd);
@@ -77,8 +87,8 @@ function renderTasks(tasks) {
     const titleTd = document.createElement('td');
     const titleInput = document.createElement('input');
     titleInput.type = 'text';
-    titleInput.value = task.title;
-    titleInput.style.width = '100%';
+    titleInput.value = task.title || '';
+    titleInput.className = 'task-input';
     titleInput.onchange = () => updateTaskField(task.id, { title: titleInput.value });
     titleTd.appendChild(titleInput);
     tr.appendChild(titleTd);
@@ -86,6 +96,7 @@ function renderTasks(tasks) {
     // Priority select + color chip
     const prioTd = document.createElement('td');
     const prioSelect = document.createElement('select');
+    prioSelect.className = 'task-input';
     ['high', 'medium', 'low'].forEach(p => {
       const opt = document.createElement('option');
       opt.value = p;
@@ -98,7 +109,6 @@ function renderTasks(tasks) {
 
     const prioChip = document.createElement('span');
     prioChip.className = 'chip priority-' + task.priority;
-    prioChip.style.marginLeft = '8px';
     prioChip.textContent = task.priority;
     prioTd.appendChild(prioChip);
     tr.appendChild(prioTd);
@@ -116,6 +126,7 @@ function renderTasks(tasks) {
     const dueInput = document.createElement('input');
     dueInput.type = 'date';
     dueInput.value = task.due_date || '';
+    dueInput.className = 'task-input';
     dueInput.onchange = () => updateTaskField(task.id, { due_date: dueInput.value });
     dueTd.appendChild(dueInput);
     tr.appendChild(dueTd);
@@ -126,7 +137,8 @@ function renderTasks(tasks) {
     spendInput.type = 'number';
     spendInput.min = '0';
     spendInput.value = task.spend || 0;
-    spendInput.style.width = '80px';
+    spendInput.style.width = '90px';
+    spendInput.className = 'task-input';
     spendInput.onchange = () => updateTaskField(task.id, { spend: Number(spendInput.value) || 0 });
     spendTd.appendChild(spendInput);
     tr.appendChild(spendTd);
@@ -134,8 +146,8 @@ function renderTasks(tasks) {
     // Delete button
     const actionsTd = document.createElement('td');
     const delBtn = document.createElement('button');
-    delBtn.textContent = 'Delete';
-    delBtn.style.background = '#d32f2f';
+    delBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
+    delBtn.className = 'delete-btn';
     delBtn.onclick = () => deleteTask(task.id);
     actionsTd.appendChild(delBtn);
     tr.appendChild(actionsTd);
@@ -145,43 +157,49 @@ function renderTasks(tasks) {
     totalSpend += Number(task.spend) || 0;
   });
 
-  totalSpendTd.textContent = `₹${totalSpend.toFixed(2)}`;
+  totalSpendTd.innerHTML = `₹${totalSpend.toFixed(2)}`;
 }
 
 // Render grouped tasks by due date (calendar view)
 function renderCalendar(tasks) {
   calendarContent.innerHTML = '';
   const grouped = {};
+  
   tasks.forEach(t => {
+    if (!t.due_date) return;
     if (!grouped[t.due_date]) grouped[t.due_date] = [];
     grouped[t.due_date].push(t);
   });
 
-  const dates = Object.keys(grouped).sort();
+  const sortedDates = Object.keys(grouped).sort();
 
-  if (dates.length === 0) {
-    calendarContent.textContent = 'No tasks yet';
+  if (sortedDates.length === 0) {
+    calendarContent.innerHTML = '<div class="empty-calendar"><i class="fas fa-calendar-x"></i> No tasks scheduled</div>';
     return;
   }
 
-  dates.forEach(date => {
-    const div = document.createElement('div');
-    div.className = 'calendar-day';
+  sortedDates.forEach(date => {
+    const card = document.createElement('div');
+    card.className = 'calendar-card';
+    
+    const dateBadge = document.createElement('div');
+    dateBadge.className = 'date-badge';
+    dateBadge.innerHTML = `<i class="far fa-calendar-alt"></i> ${date}`;
+    card.appendChild(dateBadge);
 
-    const header = document.createElement('strong');
-    header.textContent = date;
-    div.appendChild(header);
-
-    const ul = document.createElement('ul');
+    const listDiv = document.createElement('div');
     grouped[date].forEach(task => {
-      const li = document.createElement('li');
-      li.textContent = `${task.title} (₹${task.spend || 0}) [${task.priority}]${task.checked ? ' ✅' : ''}`;
-      li.style.color = task.checked ? 'green' : '#222';
-      ul.appendChild(li);
+      const item = document.createElement('div');
+      item.className = 'task-item';
+      item.innerHTML = `
+        <span class="task-title">${task.title} ${task.checked ? '✅' : ''}</span>
+        <span class="task-meta"><i class="fas fa-tag"></i> ${task.priority} | ₹${task.spend || 0}</span>
+      `;
+      listDiv.appendChild(item);
     });
-
-    div.appendChild(ul);
-    calendarContent.appendChild(div);
+    
+    card.appendChild(listDiv);
+    calendarContent.appendChild(card);
   });
 }
 
@@ -254,9 +272,9 @@ auth.onAuthStateChanged(user => {
   currentUser = user;
 
   if (user) {
-    usernameSpan.textContent = `Hello, ${user.displayName}`;
+    usernameSpan.innerHTML = `<i class="fas fa-star"></i> ${user.displayName || user.email}`;
     loginBtn.style.display = 'none';
-    logoutBtn.style.display = '';
+    logoutBtn.style.display = 'inline-flex';
     appMain.style.display = 'block';
     form['due-date'].value = new Date().toISOString().slice(0, 10);
 
@@ -277,8 +295,8 @@ auth.onAuthStateChanged(user => {
         console.error('Firestore listener error:', err);
       });
   } else {
-    usernameSpan.textContent = 'Not signed in';
-    loginBtn.style.display = '';
+    usernameSpan.innerHTML = 'Not signed in';
+    loginBtn.style.display = 'inline-flex';
     logoutBtn.style.display = 'none';
     appMain.style.display = 'none';
 
@@ -286,5 +304,15 @@ auth.onAuthStateChanged(user => {
       unsubscribeTasks();
       unsubscribeTasks = null;
     }
+    // Clear tables
+    tasksBody.innerHTML = '';
+    calendarContent.innerHTML = '';
+  }
+});
+
+// Set default due date on page load
+document.addEventListener('DOMContentLoaded', () => {
+  if (form['due-date']) {
+    form['due-date'].value = new Date().toISOString().slice(0, 10);
   }
 });
